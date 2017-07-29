@@ -1,6 +1,6 @@
-﻿#!/bin/sh
+#!/bin/sh
 
-# Revenge Installer Framework version 0.10
+# Zen Installer Framework version 1.00
 #
 # Written by Jody James
 #
@@ -34,9 +34,7 @@ if [ "$?" = "0" ]
 fi
 
 	# Select root partition
-	root_part=$(find /dev -mindepth 1 -maxdepth 1  -name "*[sh]d[a-z][0-9]"  | sort | awk '{ printf "FALSE""\0"$0"\0" }' | \
-	xargs -0 zenity --list --title="$title" --text="Choose a partition to use for the root partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." \
-	--radiolist --multiple --column ' ' --column 'Partitions')
+	root_part=$(zenity --list --title="$title" --text="Choose a partition to use for the root partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." --radiolist --column ' ' --column 'Partitions' $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf "FALSE""\0"$0"\0" }'))
 	#mounting root partition
 touch root_part.txt    
 echo $root_part >> root_part.txt
@@ -45,9 +43,7 @@ echo $root_part >> root_part.txt
 	# Swap partition?
 	zenity --question --title="$title" --text "Do you want to use a swap partition?" --height=40
 		if [ "$?" = "0" ]
-		then swap_part=$(find /dev -mindepth 1 -maxdepth 1  -name "*[sh]d[a-z][0-9]"  | sort | awk '{ printf "FALSE""\0"$0"\0" }' | \
-	xargs -0 zenity --list --title="$title" --text="Choose a partition to use for the swap partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." \
-	--radiolist --multiple --column ' ' --column 'Partitions')
+		then swap_part=$(zenity --list --title="$title" --text="Choose a partition to use for the swap partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." --radiolist --column ' ' --column 'Partitions' $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf "FALSE""\0"$0"\0" }'))
 		mkswap $swap_part
 		swapon $swap_part
 		fi
@@ -65,9 +61,7 @@ echo $root_part >> root_part.txt
 	# Boot Partition?
 	zenity --question --title="$title" --text "Do you want to use a seperate boot partition?" --height=40
 		if [ "$?" = "0" ]
-		then boot_part=$(find /dev -mindepth 1 -maxdepth 1  -name "*[sh]d[a-z][0-9]"  | sort | awk '{ printf "FALSE""\0"$0"\0" }' | \
-		xargs -0 zenity --list --title="$title" --text="Choose a partition to use for the boot partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." \
---radiolist --multiple --column ' ' --column 'Partitions')
+		then boot_part=$(zenity --list --radiolist --title="$title" --text="Please select a partition for /boot. This list shows all available drives on your system, so choose with care." --column ' ' --column Partitions $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf "FALSE""\0"$0"\0" }')
 
 		mkdir -p /mnt/boot
 		mount $boot_part /mnt/boot
@@ -77,9 +71,7 @@ echo $root_part >> root_part.txt
 	# Home Partition?
 	zenity --question --title="$title" --text "Do you want to use a seperate home partition?" --height=40
 		if [ "$?" = "0" ]
-		then home_part=$(find /dev -mindepth 1 -maxdepth 1  -name "*[sh]d[a-z][0-9]"  | sort | awk '{ printf "FALSE""\0"$0"\0" }' | \
-		xargs -0 zenity --list --title="$title" --text="Choose a partition to use for the home partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." \
-		--radiolist --multiple --column ' ' --column 'Partitions')
+		then home_part=$(zenity --list --radiolist --title="$title" --text="Select your home partition" --column ' ' --column Partitions )
 		# mounting home partition
 		mkdir -p /mnt/home
 		mount $home_part /mnt/home
@@ -262,13 +254,18 @@ userpasswd2=$(zenity --entry --title="$title" --text "Please re-enter a password
 }
 
 cups() {
-print=$(zenity --question --title="$title" --radiolist --text "Would you like to install printer support?")
+print=$(zenity --question --title="$title" --text "Would you like to install printer support?")
 cp="$?"
 }
 
 desktop() {
 # Choosing Desktop
-desktop=$(zenity --list --height=550 --width=450 --title="$title" --radiolist --text "What desktop would you like to install?" --column Select --column Desktop FALSE "gnome" FALSE "gnome gnome-extra" FALSE "plasma" FALSE "plasma kde-applications" FALSE "xfce4" FALSE "xfce4 xfce4-goodies" FALSE "lxde" FALSE "lxqt" FALSE "mate" FALSE "mate mate-extra" FALSE "budgie-desktop" FALSE "cinnamon" FALSE "deepin" FALSE "enlightenment" FALSE "jwm" FALSE "i3-wm i3lock i3status" FALSE "openbox tint2 openbox-themes")
+desktops=$(zenity --list --height=550 --width=450 --title="$title" --radiolist --text "What desktop would you like to install?" --column Select --column Desktop FALSE "gnome" FALSE "gnome gnome-extra" FALSE "plasma" FALSE "plasma kde-applications" FALSE "xfce4" FALSE "xfce4 xfce4-goodies" FALSE "lxde" FALSE "lxqt" FALSE "mate" FALSE "mate mate-extra" FALSE "budgie-desktop" FALSE "cinnamon" FALSE "deepin" FALSE "enlightenment" FALSE "jwm" FALSE "i3-wm i3lock i3status" FALSE "openbox tint2 openbox-themes" FALSE "Look at more window managers")
+if [ "$desktops" = "Look at more window managers" ]
+then zenity --list --title="$title" --text="Look at these window managers. You will select the one you want in the next step" --column View --width=450 --height=550 "$(pacman -Ss window manager)"
+wm=$(zenity --list --radiolist --column Select --column WM --height=550 --width=450 --title="$title" --radiolist --text="What window manager would you like?" $(pacman -Ssq window manager | awk '{ printf " FALSE ""\0"$0"\0" }')
+fi
+
 }
 
 displaymanager() {
@@ -461,7 +458,10 @@ if [ "$vb" = "0" ]
 fi
 echo "25"
 # installing chosen desktop
-pacstrap /mnt $desktop
+if [ "$desktops" = "Look at more window managers"
+then pacstrap /mnt $wm
+else pacstrap /mnt $desktops
+fi
 
 # cups
 if [ "$cp" = "0" ]
@@ -589,7 +589,7 @@ fi
 
 
 # Setting variables
-title="Revenge Installer Framework 0.90 $SYSTEM"
+title="Zen Installer Framework 1.00 $SYSTEM"
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
@@ -601,7 +601,7 @@ Parted() {
 	parted --script $dev "$1"
 }
 # Greeting the user
-zenity --question --title="$title" --text "Welcome to the Revenge Arch Installer.\n\nNext you will be prompted with a series of questions that will\nguide you through installing Arch Linux.\nYou will be asked if you want to use manual or auto partitioning.\nIf you select auto partitioning the drive that you select will be completely deleted\nand Arch will be installed. If you select manual, you will have the opportunity to partition the disk yourself\nand select which partitons to use for installation.\nClick 'yes' to begin or 'no' to exit." --height=50
+zenity --question --title="$title" --text "Welcome to the Zen Arch Installer.\n\nNext you will be prompted with a series of questions that will\nguide you through installing Arch Linux.\nYou will be asked if you want to use manual or auto partitioning.\nIf you select auto partitioning the drive that you select will be completely deleted\nand Arch will be installed. If you select manual, you will have the opportunity to partition the disk yourself\nand select which partitons to use for installation.\nClick 'yes' to begin or 'no' to exit." --height=50
 
 if [ "$?" = "1" ]
 	then exit
