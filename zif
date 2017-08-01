@@ -313,6 +313,7 @@ sed -i -e 's/[|]//g' utils.txt
 }
 
 # allowing user to select extra applications
+pacman -Syy
 libreoffice() {
 lo=$(zenity --question --title="$title" --text="Would you like to install libreoffice, an open source ms office alternative?")
 lbr="$?"
@@ -352,7 +353,7 @@ devices=` awk '{print "FALSE " $0}' devices.txt `
 
 grub=$(zenity --question --title="$title" --text "Would you like to install the bootloader?\nThe answer to this is usually yes,\nunless you are dual-booting and plan to have another system handle\nthe boot process.")
 grb="$?"
-if [ "$?" = "0" ]
+if [ "$grb" = "0" ]
 	then grub_device=$(zenity --list --title="$title" --text "Where do you want to install the bootloader?" --radiolist --column Select --column Device $devices)
 fi
 }
