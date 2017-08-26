@@ -215,8 +215,7 @@ username=$(zenity --entry --title="$title" --text "Please enter a username for t
 vbox() {
 graphics=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 if [[ $(echo $graphics | grep -i 'virtualbox') != "" ]]
-	then zenity --question --title="$title" --height=40 
---text "The Revenge Installer has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
+	then zenity --question --title="$title" --height=40 --text "The Revenge Installer has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
 vb="$?"
 fi
 }
