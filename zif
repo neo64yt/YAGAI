@@ -288,7 +288,7 @@ pa="$?"
 }
 
 archuserrepo() {
-zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'pacaur'?"
+zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'pikaur'?"
 abs="$?"
 }
 
@@ -442,7 +442,7 @@ arch_chroot "systemctl enable NetworkManager"
 echo "50"
 # adding revenge_repo
 if [ "$rr" = "0"  ]
-then echo "[revenge_repo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/obrevenge/revenge_repo/master/x86_64" >> /mnt/etc/pacman.conf;echo "Server = https://downloads.sourceforge.net/project/revenge-repo/revenge_repo/x86_64" >> /mnt/etc/pacman.conf;echo "Server = ftp://ftp.heanet.ie/mirrors/sourceforge/r/re/revenge-repo/revenge_repo/x86_64" >> /mnt/etc/pacman.conf
+then echo "[revenge_repo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://gitlab.com/spookykidmm/revenge_repo/raw/master/x86_64" >> /mnt/etc/pacman.conf;echo "Server = https://downloads.sourceforge.net/project/revenge-repo/revenge_repo/x86_64" >> /mnt/etc/pacman.conf
 arch_chroot "sudo pacman -Syy"
 fi
 
@@ -457,7 +457,7 @@ fi
 if [ "$abs" = "0" ]
 	then echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf 
     arch_chroot "pacman -Syy"
-	arch_chroot "pacman -S --noconfirm pacaur"
+	arch_chroot "pacman -S --noconfirm pikaur"
 
 fi
 echo "75"
@@ -557,7 +557,7 @@ echo "%wheel ALL=(ALL) ALL" >> /mnt/etc/sudoers
 # selecting shell
 if [ "$shell" = "zsh" ]
 then arch_chroot "sudo pacman -S --noconfirm zsh zsh-syntax-highlighting zsh-completions grml-zsh-config;chsh -s /usr/bin/zsh $username"
-else arch_chroot "sudo pacman -S --noconfirm $shell;chsh -s /usr/bin/$shell"
+else arch_chroot 'sudo pacman -S --noconfirm $shell;chsh -s /usr/bin/"$shell"'
 fi
 
 # starting desktop manager
