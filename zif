@@ -557,7 +557,7 @@ echo "%wheel ALL=(ALL) ALL" >> /mnt/etc/sudoers
 # selecting shell
 if [ "$shell" = "zsh" ]
 then arch_chroot "sudo pacman -S --noconfirm zsh zsh-syntax-highlighting zsh-completions grml-zsh-config;chsh -s /usr/bin/zsh $username"
-else arch_chroot 'sudo pacman -S --noconfirm $shell;chsh -s /usr/bin/"$shell"'
+else arch_chroot 'sudo pacman -S --noconfirm "$shell";chsh -s /usr/bin/"$shell"'
 fi
 
 # starting desktop manager
