@@ -165,6 +165,7 @@ partition() {
 
 configure() {
 # Getting Locale
+country=$(zenity --list --radiolist --title="$title" --height=500 --width=450 --column Select --column Country --text="Select your country code. This will be used to find the fastest mirrors for you" FALSE all FALSE AU FALSE AT FALSE BD FALSE BY FALSE BE FALSE BA FALSE BR FALSE BG FALSE CA FALSE CL FALSE CN FALSE CO FALSE HR FALSE CZ FALSE DE FALSE DK FALSE EE FALSE ES FALSE FR FALSE GB FALSE HU FALSE IE FALSE IL FALSE IN FALSE IT FALSE JP FALSE KR FALSE KZ FALSE LK FALSE LU FALSE LV FALSE MK FALSE NL FALSE NO FALSE NZ FALSE PT FALSE RO FALSE RS FALSE RU FALSE SU FALSE SG FALSE SK FALSE TR FALSE TW FALSE UA FALSE US FALSE UZ FALSE VN FALSE ZA)
 locales=$(cat /etc/locale.gen | grep -v "#  " | sed 's/#//g' | sed 's/ UTF-8//g' | grep .UTF-8 | sort | awk '{ printf "FALSE ""\0"$0"\0" }')
 
 locale=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Select your locale/language.\nThe default is American English 'en_US.UTF-8'." --column Select --column Locale TRUE en_US.UTF-8 $locales)
@@ -374,7 +375,8 @@ if [ "$?" = "1" ]
 else (
 # sorting pacman mirrors
 echo "# Sorting fastest pacman mirrors..."
-reflector --verbose -l 50 -p http --sort rate --save /etc/pacman.d/mirrorlist
+rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
+echo -e "$rank" >> /etc/pacman.d/mirrorlist
 
 # updating pacman cache
 echo "# Updating Pacman Cache..."
@@ -463,6 +465,13 @@ fi
 echo "75"
 
 # installing bootloader
+proc=$(grep -m1 vendor_id /proc/cpuinfo | awk '{print $3}')
+if [ "$proc" = "GenuineIntel" ]
+then arch_chroot "pacman -S --noconfirm intel-ucode"
+elif [ "$proc" = "AuthenticAMD" ]
+then arch_chroot "pacman -R --noconfirm intel-ucode"
+arch_chroot "pacman -S --no-confirm amd-ucode"
+fi
 if [ "$grb" = "0" ]
 	then if [ "$SYSTEM" = 'BIOS' ]
 		then echo "# Installing Bootloader..."
@@ -558,7 +567,7 @@ echo "%wheel ALL=(ALL) ALL" >> /mnt/etc/sudoers
 if [ "$shell" = "zsh" ]
 then arch_chroot "sudo pacman -S --noconfirm zsh zsh-syntax-highlighting zsh-completions grml-zsh-config;chsh -s /usr/bin/zsh $username"
 elif [ "$shell" = "bash" ]
-then arch_chroot "sudo pacman -S --noconfirm bash;chsh -s /usr/bin/bash $username"
+then arch_chroot "sudo pacman -S --noconfirm bash;chsh -s /bin/bash $username"
 elif [ "$shell" = "fish" ]
 then arch_chroot "sudo pacman -S --noconfirm fish;chsh -s /usr/bin/fish $username"
 fi
