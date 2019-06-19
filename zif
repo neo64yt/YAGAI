@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Zen Installer Framework version 1.00
+# Zen Installer Framework version 1.30
 #
 # Written by Jody James
 #
@@ -318,6 +318,8 @@ sed -i -e 's/[|]//g' utils.txt
 }
 
 # allowing user to select extra applications
+rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
+echo -e "$rank" >> /etc/pacman.d/mirrorlist
 pacman -Syy
 libreoffice() {
 zenity --question --height=500 --width=450 --title="$title" --text="Would you like to install libreoffice, an open source ms office alternative?"
@@ -445,7 +447,7 @@ echo "50"
 # adding revenge_repo
 if [ "$rr" = "0"  ]
 then echo "[revenge_repo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://gitlab.com/spookykidmm/revenge_repo/raw/master/x86_64" >> /mnt/etc/pacman.conf;echo "Server = https://downloads.sourceforge.net/project/revenge-repo/revenge_repo/x86_64" >> /mnt/etc/pacman.conf
-arch_chroot "sudo pacman -Syy"
+arch_chroot "pacman -Syy"
 fi
 
 # installing pamac-aur
@@ -470,7 +472,7 @@ if [ "$proc" = "GenuineIntel" ]
 then arch_chroot "pacman -S --noconfirm intel-ucode"
 elif [ "$proc" = "AuthenticAMD" ]
 then arch_chroot "pacman -R --noconfirm intel-ucode"
-arch_chroot "pacman -S --no-confirm amd-ucode"
+arch_chroot "pacman -S --noconfirm amd-ucode"
 fi
 if [ "$grb" = "0" ]
 	then if [ "$SYSTEM" = 'BIOS' ]
@@ -560,16 +562,16 @@ arch_chroot "hwclock --systohc --$clock"
 echo "# Setting Hostname..."
 arch_chroot "echo $hname > /etc/hostname"
 
-# setting sudo permissions
+# setting n permissions
 echo "%wheel ALL=(ALL) ALL" >> /mnt/etc/sudoers
 
 # selecting shell
 if [ "$shell" = "zsh" ]
-then arch_chroot "sudo pacman -S --noconfirm zsh zsh-syntax-highlighting zsh-completions grml-zsh-config;chsh -s /usr/bin/zsh $username"
+then arch_chroot "pacman -S --noconfirm zsh zsh-syntax-highlighting zsh-completions grml-zsh-config;chsh -s /usr/bin/zsh $username"
 elif [ "$shell" = "bash" ]
-then arch_chroot "sudo pacman -S --noconfirm bash;chsh -s /bin/bash $username"
+then arch_chroot "pacman -S --noconfirm bash;chsh -s /bin/bash $username"
 elif [ "$shell" = "fish" ]
-then arch_chroot "sudo pacman -S --noconfirm fish;chsh -s /usr/bin/fish $username"
+then arch_chroot "pacman -S --noconfirm fish;chsh -s /usr/bin/fish $username"
 fi
 
 # starting desktop manager
@@ -608,7 +610,7 @@ fi
 
 
 # Setting variables
-title="Zen Installer Framework 1.00 $SYSTEM"
+title="Zen Installer Framework 1.30 $SYSTEM"
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
