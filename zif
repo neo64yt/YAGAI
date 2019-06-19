@@ -267,7 +267,7 @@ cp="$?"
 
 desktop() {
 # Choosing Desktop
-desktops=$(zenity --list --height=500 --width=450 --title="$title" --radiolist --text "What desktop would you like to install?" --column Select --column Desktop FALSE "gnome" FALSE "gnome gnome-extra" FALSE "plasma" FALSE "plasma kde-applications" FALSE "xfce4" FALSE "xfce4 xfce4-goodies" FALSE "lxde" FALSE "lxqt" FALSE "mate" FALSE "mate mate-extra" FALSE "budgie-desktop" FALSE "cinnamon" FALSE "deepin" FALSE "enlightenment" FALSE "jwm" FALSE "i3-wm i3lock i3status" FALSE "i3-gaps i3status i3lock" FALSE "openbox tint2 openbox-themes" FALSE "mate mate-extra mate-revenge-desktop" FALSE "i3-revenge-desktop" FALSE "Look at more window managers")
+desktops=$(zenity --list --height=500 --width=450 --title="$title" --radiolist --text "What desktop would you like to install?" --column Select --column Desktop FALSE "gnome" FALSE "gnome gnome-extra" FALSE "plasma" FALSE "plasma kde-applications" FALSE "xfce4" FALSE "xfce4 xfce4-goodies" FALSE "lxde" FALSE "lxqt" FALSE "mate" FALSE "mate mate-extra" FALSE "budgie-desktop" FALSE "cinnamon" FALSE "deepin" FALSE "deepin deepin-extra" FALSE "enlightenment" FALSE "jwm" FALSE "i3-wm i3lock i3status" FALSE "i3-gaps i3status i3lock" FALSE "openbox tint2 openbox-themes" FALSE "Look at more window managers")
 if [ "$desktops" = "Look at more window managers" ]
 then zenity --list --title="$title" --text="Look at these window managers. You will select the one you want in the next step" --column View --width=450 --height=550 "$(pacman -Ss window manager)"
 wm=$(zenity --list --radiolist --height=500 --width=450 --column Select --column WM --title="$title" --radiolist --text="What window manager would you like?" $(pacman -Ssq window manager | awk '{ printf " FALSE ""\0"$0"\0" }'))
@@ -365,6 +365,8 @@ grub=$(zenity --question --height=500 --width=450 --title="$title" --text "Would
 grb="$?"
 if [ "$grb" = "0" ]
 	then grub_device=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Where do you want to install the bootloader?" --column Select --column Device $devices)
+zenity --question --text="Do you have other operating systems on your device that you'd like grub to detect?"
+probe="$?"
 fi
 }
 
@@ -459,23 +461,29 @@ fi
 
 # AUR
 if [ "$abs" = "0" ]
-	then echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf 
+	then if ["$pa" = "0" ]
+		 then arch_chroot "pacman -Syy"
+		 	  arch_chroot "pacman -S --noconfirm pikaur"
+	else echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf 
     arch_chroot "pacman -Syy"
 	arch_chroot "pacman -S --noconfirm pikaur"
-
+	fi
 fi
 echo "75"
 
 # installing bootloader
 proc=$(grep -m1 vendor_id /proc/cpuinfo | awk '{print $3}')
 if [ "$proc" = "GenuineIntel" ]
-then arch_chroot "pacman -S --noconfirm intel-ucode"
+then pacstrap /mnt intel-ucode
 elif [ "$proc" = "AuthenticAMD" ]
 then arch_chroot "pacman -R --noconfirm intel-ucode"
-arch_chroot "pacman -S --noconfirm amd-ucode"
+pacstrap /mnt amd-ucode
 fi
 if [ "$grb" = "0" ]
-	then if [ "$SYSTEM" = 'BIOS' ]
+	then if [ "$probe" = "0" ]
+		then pacstrap /mnt os-prober
+		fi 
+		if [ "$SYSTEM" = 'BIOS' ]
 		then echo "# Installing Bootloader..."
 		pacstrap /mnt grub
 		arch_chroot "grub-install --target=i386-pc $grub_device"
