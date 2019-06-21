@@ -466,7 +466,7 @@ fi
 
 # AUR
 if [ "$abs" = "0" ]
-	then if ["$pa" = "0" ]
+	then if [ "$pa" = "0" ]
 		 then arch_chroot "pacman -Syy"
 		 	  arch_chroot "pacman -S --noconfirm pikaur"
 	else echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf 
