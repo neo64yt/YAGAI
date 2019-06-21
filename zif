@@ -185,12 +185,15 @@ vary="$?"
 if [ "$vary" = "0" ]
 then variant=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Select your preferred variant" --column Select --column Variant $(localectl list-x11-keymap-variants | awk '{ printf " FALSE ""\0"$0"\0" }'))
 fi
-zenity --question --height=500 --width=450 --title="$title" --text="Not seeing your keymap above?"
+
+zenity --question --height=500 --width=450 --title="$title" --text="Do you see your keymap in any of the options above?"
 map="$?"
-if [ "$map" = "0" ]
-then keymap=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Select your keymap" --column Select --Column Keymap $(localectl list-keymaps | awk '{ printf " FALSE ""\0"$0"\0" }'))
+
+if [ "$map" = "1" ]
+then keymap=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Select your keymap" --column Select --column Keymap $(localectl list-keymaps | awk '{ printf " FALSE ""\0"$0"\0" }'))
 loadkeys $keymap
 fi
+
 setxkbmap $layout
 
 if [ "$model" = "0" ] 
@@ -561,9 +564,10 @@ export LANG=${locale}
 #setting keymap
 mkdir -p /mnt/etc/X11/xorg.conf.d/
 echo -e 'Section "InputClass"\n\tIdentifier "system-keyboard"\n\tMatchIsKeyboard "on"\n\tOption "XkbLayout" "'$layout'"\n\tOption "XkbModel" "'$model'"\n\tOption "XkbVariant" ",'$variant'"\n\tOption "XkbOptions" "grp:alt_shift_toggle"\nEndSection' > /mnt/etc/X11/xorg.conf.d/00-keyboard.conf
-if [ "$map" = "0" ]
+if [ "$map" = "1" ]
 then arch_chroot "localectl set-keymap --no-convert $keymap"
 fi
+
 #setting timezone
 echo "# Setting Timezone..."
 arch_chroot "rm /etc/localtime"
