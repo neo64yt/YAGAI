@@ -7,4 +7,4 @@ You can Download the ISO at https://sourceforge.net/projects/revenge-installer/
 
 If you have any issues with any of the software, please report it on it's corresponding issues page or email me at zeninstaller at tutanota dot com
 
-You can follow the latest Zen Installer updates at https://write.privacytools.io/zeninstaller/
+You can follow the latest Zen Installer updates at https://write.hostux.social/zeninstaller/
