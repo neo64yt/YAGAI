@@ -1,7 +1,9 @@
 # zen_installer
-[![Download](https://img.shields.io/sourceforge/dw/revenge-installer.svg?style=popout-square)](https://https://sourceforge.net/projects/revenge-installer/)
-https://img.shields.io/liberapay/patrons/zeninstaller.svg
-https://img.shields.io/mastodon/follow/21797.svg?domain=https%3A%2F%2Fsocial.privacytools.io&style=social
+[![Download](https://img.shields.io/sourceforge/dw/revenge-installer.svg?style=popout-square)](https://sourceforge.net/projects/revenge-installer/)
+
+[![Donate](https://img.shields.io/liberapay/patrons/zeninstaller.svg)](https://en.liberapay.com/zeninstaller/)
+
+[![Follow](https://img.shields.io/mastodon/follow/21797.svg?domain=https%3A%2F%2Fsocial.privacytools.io&style=social)](https://social.privacytools.io/@zeninstaller)
 
 Zen Installer is a graphical installer for Arch Linux. With many options, the install you make is completely unique to you and requires minimal effort aside from making your choices.
 
