@@ -1,5 +1,5 @@
 # zen_installer
-https://img.shields.io/sourceforge/dw/revenge-installer.svg?style=popout-square
+[![Download](https://img.shields.io/sourceforge/dw/revenge-installer.svg?style=popout-square)](https://https://sourceforge.net/projects/revenge-installer/)
 https://img.shields.io/liberapay/patrons/zeninstaller.svg
 https://img.shields.io/mastodon/follow/21797.svg?domain=https%3A%2F%2Fsocial.privacytools.io&style=social
 
