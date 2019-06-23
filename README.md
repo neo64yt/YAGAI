@@ -17,6 +17,9 @@ You can follow the latest Zen Installer updates at https://write.hostux.social/z
 
 Dependencies:
 Root
+
 pacman-contrib
+
 gparted
+
 zenity
