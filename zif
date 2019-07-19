@@ -15,6 +15,10 @@
 # Special Recognition to 'angeltoast' as some code was adapted from the Feliz Installer
 #
 #
+#Pulling dependencies
+sudo pacman -Syyu
+sudo pacman -S --noconfirm arch-install-scripts archiso pacman-contrib zenity gparted
+
 # Selecting the Drive
 man_partition() {
 list=` lsblk -lno NAME,TYPE,SIZE,MOUNTPOINT | grep "disk" `
@@ -291,13 +295,19 @@ zenity --question --title="$title"  --height=500 --width=450 --text="Would you l
 rr="$?"
 }
 
-pamacaur() {
-zenity --question --title="$title" --height=500 --width=450 --text="Would you like to install pamac?\nPamac is a GUI tool to install packages from the repo and the aur"
-pa="$?"
+packagemanager() {
+zenity --question --title="$title" --height=500 --width=450 --text="Would you like to install a graphical package manager? This will allow you to install and remove apps without dealing with the command line" 
+pm="$?"
+if [ "$pm" = "0" ] 
+then zenity --info --title="$title" --height=500 --width=450 --text="Choose octopi if you are using a Qt desktop such as KDE or LXQt.
+Choose Pamac if you are using a GTK+ desktop. 
+If you are only using a window manager, you can select either without any detrimental effects" 
+pack=$(zenity --list --radiolist --title="$title" --height=500 --width=450 --text="What package manager would you like to install?" --column select --column "Package Manager" FALSE octopi FALSE pamac-aur) 
+fi
 }
 
 archuserrepo() {
-zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'pikaur'?"
+zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'yay'?"
 abs="$?"
 }
 
@@ -461,20 +471,21 @@ arch_chroot "pacman -Syy"
 fi
 
 # installing pamac-aur
-if [ "$pa" = "0" ]
+if [ "$pm" = "0" ]
 then echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf
+sudo pacman -Syy 
 arch_chroot "pacman -Syy"
-arch_chroot "pacman -S --noconfirm pamac-aur"
+arch_chroot "pacman -S --noconfirm $pack"
 fi
 
 # AUR
 if [ "$abs" = "0" ]
-	then if [ "$pa" = "0" ]
+	then if [ "$pm" = "0" ]
 		 then arch_chroot "pacman -Syy"
-		 	  arch_chroot "pacman -S --noconfirm pikaur"
+		 	  arch_chroot "pacman -S --noconfirm yay"
 	else echo "[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64" >> /mnt/etc/pacman.conf 
     arch_chroot "pacman -Syy"
-	arch_chroot "pacman -S --noconfirm pikaur"
+	arch_chroot "pacman -S --noconfirm yay"
 	fi
 fi
 echo "75"
@@ -656,7 +667,7 @@ kernel
 vbox
 #nvidia
 revengerepo
-pamacaur
+packagemanager
 archuserrepo
 cups
 displaymanager
