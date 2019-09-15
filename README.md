@@ -16,7 +16,8 @@ If you have any issues with any of the software, please report it on it's corres
 You can follow the latest Zen Installer updates at https://write.hostux.social/zeninstaller/
 
 Dependencies:
-Root
+
+**Root**
 
 pacman-contrib
 
