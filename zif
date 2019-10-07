@@ -409,7 +409,7 @@ else (
 # sorting pacman mirrors
 echo "# Sorting fastest pacman mirrors..."
 rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
-echo -e "$rank" >> /etc/pacman.d/mirrorlist
+echo -e "$rank" > /etc/pacman.d/mirrorlist
 
 # updating pacman cache
 echo "# Updating Pacman Cache..."
