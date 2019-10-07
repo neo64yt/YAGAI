@@ -17,6 +17,7 @@
 #
 #Pulling dependencies
 sudo pacman -Syy
+sudo pacman -Syu --noconfirm base
 sudo pacman -S --noconfirm arch-install-scripts archiso pacman-contrib zenity gparted
 
 # Selecting the Drive
