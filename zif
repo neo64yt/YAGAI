@@ -17,7 +17,6 @@
 #
 #Pulling dependencies
 sudo pacman -Syy
-#sudo pacman -Syu --noconfirm base
 sudo pacman -S --noconfirm arch-install-scripts archiso pacman-contrib zenity gparted
 
 # Selecting the Drive
@@ -419,8 +418,9 @@ arch_chroot "pacman -Syy"
 
 #installing base
 echo "# Installing Base..."
+pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils
 if [ "$kernel" = "linux" ]
-	then pacstrap /mnt base base-devel
+	then pacstrap /mnt base base-devel linux
 elif [ "$kernel" = "linux-lts" ]
 	then pacstrap /mnt $(pacman -Sqg base | sed 's/^\(linux\)$/\1-lts/') base-devel
 elif [ "$kernel" = "linux-hardened" ]
