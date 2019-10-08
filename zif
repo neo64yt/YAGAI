@@ -346,7 +346,7 @@ sed -i -e 's/[|]//g' cust.txt
 }
 # allowing user to select extra applications
 rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
-echo -e "$rank" >> /etc/pacman.d/mirrorlist
+echo -e "$rank" > /etc/pacman.d/mirrorlist
 pacman -Syy
 libreoffice() {
 zenity --question --height=500 --width=450 --title="$title" --text="Would you like to install libreoffice, an open source ms office alternative?"
@@ -407,9 +407,9 @@ if [ "$?" = "1" ]
 	then exit
 else (
 # sorting pacman mirrors
-echo "# Sorting fastest pacman mirrors..."
-rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
-echo -e "$rank" > /etc/pacman.d/mirrorlist
+#echo "# Sorting fastest pacman mirrors..."
+#rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
+#echo -e "$rank" > /etc/pacman.d/mirrorlist
 
 # updating pacman cache
 echo "# Updating Pacman Cache..."
@@ -562,6 +562,7 @@ cust=` cat cust.txt `
 
 
 # Installing Selecting Applications
+echo -e "$rank" > /etc/pacman.d/mirrorlist
 arch_chroot "pacman -Syy"
 arch_chroot "pacman -S --noconfirm $int $med $off $utils $cust"
 if [ "$lbr" = "0" ]
