@@ -422,11 +422,11 @@ pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs 
 if [ "$kernel" = "linux" ]
 	then pacstrap /mnt base base-devel linux
 elif [ "$kernel" = "linux-lts" ]
-	then pacstrap /mnt $(pacman -Sqg base | sed 's/^\(linux\)$/\1-lts/') base-devel
+	then pacstrap /mnt base linux-lts base-devel
 elif [ "$kernel" = "linux-hardened" ]
-	then pacstrap /mnt $(pacman -Sqg base | sed 's/^\(linux\)$/\1-hardened/') base-devel
+	then pacstrap /mnt base linux-hardened base-devel
 elif [ "$kernel" = "linux-zen" ]
-	then pacstrap /mnt $(pacman -Sqg base | sed 's/^\(linux\)$/\1-zen/') base-devel
+	then pacstrap /mnt base linux-zen base-devel
 
 fi
 
