@@ -407,10 +407,10 @@ if [ "$?" = "1" ]
 	then exit
 else (
 # sorting pacman mirrors
-#echo "# Sorting fastest pacman mirrors..."
-#rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
-#echo -e "$rank" > /etc/pacman.d/mirrorlist
-
+echo "# Sorting fastest pacman mirrors..."
+rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
+echo -e "$rank" > /etc/pacman.d/mirrorlist
+echo -e "$rank" > mirrors.txt
 # updating pacman cache
 echo "# Updating Pacman Cache..."
 pacman -Syy
@@ -562,7 +562,7 @@ cust=` cat cust.txt `
 
 
 # Installing Selecting Applications
-echo -e "$rank" > /etc/pacman.d/mirrorlist
+cp mirrors.txt /mnt/etc/pacman.d/mirrorlist
 arch_chroot "pacman -Syy"
 arch_chroot "pacman -S --noconfirm $int $med $off $utils $cust"
 if [ "$lbr" = "0" ]
