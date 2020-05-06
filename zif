@@ -291,7 +291,7 @@ dm=$(zenity --list --title="$title" --radiolist  --height=500 --width=450 --text
 }
 
 revengerepo() {
-zenity --question --title="$title"  --height=500 --width=450 --text="Would you like to add the revenge_repo to your /etc/pacman.conf?\n The revenge_repo contains a few extra packages, such as spotify and pamac."
+zenity --question --title="$title"  --height=500 --width=450 --text="Would you like to add spookyrepo to your /etc/pacman.conf?\n spookyrepo contains a few extra packages, such as spotify and pamac."
 rr="$?"
 }
 
@@ -446,7 +446,7 @@ echo "20"
 if [ "$vb" = "0" ]
 	then
 	if [ "$kernel" = "linux" ]
-		then pacstrap /mnt virtualbox-guest-modules-arch virtualbox-guest-utils
+		then pacstrap /mnt virtualbox-guest-utils
         	echo -e "vboxguest\nvboxsf\nvboxvideo" > /mnt/etc/modules-load.d/virtualbox.conf
 	elif [ "$kernel" = "linux-lts" ]
 		then pacstrap /mnt virtualbox-guest-dkms virtualbox-guest-utils linux-lts-headers
@@ -476,10 +476,10 @@ fi
 # enabling network manager
 arch_chroot "systemctl enable NetworkManager"
 echo "50"
-# adding revenge_repo
-if [ "$rr" = "0"  ]
+# adding spookyrepo
+if [ "$rr" = "0" ]
 then 
-echo -e "\n[revenge_repo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://gitlab.com/spookykidmm/revenge_repo/raw/master/x86_64" >> /mnt/etc/pacman.conf;echo -e "Server = https://downloads.sourceforge.net/project/revenge-repo/revenge_repo/x86_64\n" >> /mnt/etc/pacman.conf
+echo -e "\n[spookyrepo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://github.com/spookykidmm/spookyrepo/raw/master/x86_64" >> /mnt/etc/pacman.conf;echo -e "Server = https://downloads.sourceforge.net/project/spookyrepo/x86_64\n" >> /mnt/etc/pacman.conf
 arch_chroot "pacman -Syy"
 fi
 
