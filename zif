@@ -19,9 +19,12 @@
 #Pulling dependencies
 startup() {
 (
+echo "# Updating Repositories and Pulling Dependencies"
 sudo pacman -Syy
+echo "50"
 sudo pacman -S --noconfirm arch-install-scripts archiso pacman-contrib zenity gparted
-) | zenity --progress --title="$title" --width=450 --no-cancel
+echo "100"
+) | zenity --progress --percentage=0 --title="$title" --width=450 --no-cancel
 }
 # Selecting the Drive
 man_partition() {
