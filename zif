@@ -425,7 +425,7 @@ arch_chroot "pacman -Syy"
 
 #installing base
 echo "# Installing Base..."
-pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils
+pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils dosfstools mtools
 if [ "$kernel" = "linux" ]
 	then pacstrap /mnt base base-devel linux
 elif [ "$kernel" = "linux-lts" ]
