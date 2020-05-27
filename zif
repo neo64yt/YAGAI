@@ -227,7 +227,7 @@ username=$(zenity --entry --title="$title" --text "Please enter a username for t
 
 vbox() {
 graphics=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
-if [[ $(echo $graphics | grep -i 'virtualbox') != "" ]]
+if [[ $(echo $graphics | grep -i 'VMware') != "" ]]
 	then zenity --question --height=500 --width=450 --title="$title" --text "The Zen Installer has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
 vb="$?"
 fi
@@ -440,7 +440,7 @@ fi
 echo "10"
 # installing video and audio packages
 echo "# Installing Desktop, Sound, and Video Drivers..."
-pacstrap /mnt mesa xorg xorg-server xorg-apps xorg-xinit xorg-twm xterm xorg-drivers alsa-utils pulseaudio pulseaudio-alsa xf86-input-synaptics xf86-input-keyboard xf86-input-libinput intel-ucode b43-fwcutter networkmanager nm-connection-editor network-manager-applet polkit-gnome ttf-dejavu gnome-keyring xdg-user-dirs gvfs
+pacstrap /mnt mesa xorg xorg-server xorg-apps xorg-xinit xorg-twm xterm xorg-drivers alsa-utils pulseaudio pulseaudio-alsa intel-ucode b43-fwcutter networkmanager nm-connection-editor network-manager-applet polkit-gnome ttf-dejavu gnome-keyring xdg-user-dirs gvfs
 echo "20"
 # virtualbox
 if [ "$vb" = "0" ]
@@ -633,16 +633,16 @@ if [ "$dm"  = "default" ]
 then if [ "$desktop" == "gnome" ]
 	then arch_chroot "systemctl enable gdm.service"
 	elif [ "$desktop" = "budgie-desktop" ]
-	then pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
+	then pacstrap /mnt lightdm lightdm-settings accountsservice lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 	elif [ "$desktop" = "lxde" ]
 	then pacstrap /mnt lxdm-gtk3;arch_chroot "systemctl enable lxdm.service"
 	elif [ "$desktop" == "plasma" ]
 	then pacstrap /mnt sddm;arch_chroot "systemctl enable sddm.service"
-	else pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter
+	else pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter accountsservice
 	arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 	fi
 elif [ "$dm" = "lightdm" ]
-then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
+then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings accountsservice;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 else pacstrap /mnt $dm;arch_chroot "systemctl enable $dm.service"
 fi
 
