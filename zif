@@ -190,7 +190,7 @@ if [ "$vary" = "0" ]
 then variant=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Select your preferred variant" --column Select --column Variant $(localectl list-x11-keymap-variants | awk '{ printf " FALSE ""\0"$0"\0" }'))
 fi
 
-zenity --question --height=500 --width=450 --title="$title" --text="Do you see your keymap in any of the options above?"
+zenity --question --height=500 --width=450 --title="$title" --text="Do you see your keymap in any of the previous options?"
 map="$?"
 
 if [ "$map" = "1" ]
@@ -485,7 +485,7 @@ fi
 
 # installing pamac-aur
 if [ "$pm" = "0" ]
-then echo -e "\t[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo -e "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64\n" >> /mnt/etc/pacman.conf
+then echo -e "\n[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo -e "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64\n" >> /mnt/etc/pacman.conf
 sudo pacman -Syy 
 arch_chroot "pacman -Syy"
 arch_chroot "pacman -S --noconfirm $pack"
@@ -633,16 +633,16 @@ if [ "$dm"  = "default" ]
 then if [ "$desktop" == "gnome" ]
 	then arch_chroot "systemctl enable gdm.service"
 	elif [ "$desktop" = "budgie-desktop" ]
-	then pacstrap /mnt lightdm lightdm-gtk-greeter-settings lightdm-gtk-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service"
+	then pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service"
 	elif [ "$desktop" = "lxde" ]
 	then pacstrap /mnt lxdm-gtk3;arch_chroot "systemctl enable lxdm.service"
 	elif [ "$desktop" == "plasma" ]
 	then pacstrap /mnt sddm;arch_chroot "systemctl enable sddm.service"
-	else pacstrap /mnt lightdm lightdm-gtk-greeter-settings lightdm-gtk-greeter
+	else pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter
 	arch_chroot "systemctl enable lightdm.service"
 	fi
 elif [ "$dm" = "lightdm" ]
-then pacstrap /mnt lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings;arch_chroot "systemctl enable lightdm.service"
+then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings;arch_chroot "systemctl enable lightdm.service"
 else pacstrap /mnt $dm;arch_chroot "systemctl enable $dm.service"
 fi
 
