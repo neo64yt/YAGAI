@@ -287,7 +287,7 @@ fi
 }
 
 displaymanager() {
-dm=$(zenity --list --title="$title" --radiolist  --height=500 --width=450 --text "What display manager would you like to use?" --column "Select" --column "Display Manager" FALSE "lightdm" FALSE "lxdm" FALSE "sddm" FALSE "gdm" FALSE "default")
+dm=$(zenity --list --title="$title" --radiolist  --height=500 --width=450 --text "What display manager would you like to use?" --column "Select" --column "Display Manager" FALSE "lxdm" FALSE "sddm" FALSE "gdm" FALSE "default")
 }
 
 revengerepo() {
@@ -633,13 +633,13 @@ if [ "$dm"  = "default" ]
 then if [ "$desktop" == "gnome" ]
 	then arch_chroot "systemctl enable gdm.service"
 	elif [ "$desktop" = "budgie-desktop" ]
-	then pacstrap /mnt lightdm lightdm-settings accountsservice lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
+	then pacstrap /mnt lxdm-gtk3 gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lxdm.service"
 	elif [ "$desktop" = "lxde" ]
 	then pacstrap /mnt lxdm-gtk3;arch_chroot "systemctl enable lxdm.service"
 	elif [ "$desktop" == "plasma" ]
 	then pacstrap /mnt sddm;arch_chroot "systemctl enable sddm.service"
-	else pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter accountsservice
-	arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
+	else pacstrap /mnt lxdm-gtk3
+	arch_chroot "systemctl enable lxdm.service"
 	fi
 elif [ "$dm" = "lightdm" ]
 then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings accountsservice;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
