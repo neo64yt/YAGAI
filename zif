@@ -633,16 +633,16 @@ if [ "$dm"  = "default" ]
 then if [ "$desktop" == "gnome" ]
 	then arch_chroot "systemctl enable gdm.service"
 	elif [ "$desktop" = "budgie-desktop" ]
-	then pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true'"
+	then pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter gnome-control-center gnome-backgrounds;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 	elif [ "$desktop" = "lxde" ]
 	then pacstrap /mnt lxdm-gtk3;arch_chroot "systemctl enable lxdm.service"
 	elif [ "$desktop" == "plasma" ]
 	then pacstrap /mnt sddm;arch_chroot "systemctl enable sddm.service"
 	else pacstrap /mnt lightdm lightdm-settings lightdm-slick-greeter
-	arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true'"
+	arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 	fi
 elif [ "$dm" = "lightdm" ]
-then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true'"
+then pacstrap /mnt lightdm lightdm-slick-greeter lightdm-settings;arch_chroot "systemctl enable lightdm.service;echo -e '\n[LightDM]\nlogind-check-graphical=true >> /etc/lightdm.conf'"
 else pacstrap /mnt $dm;arch_chroot "systemctl enable $dm.service"
 fi
 
