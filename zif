@@ -345,9 +345,10 @@ customization_apps() {
 sed -i -e 's/[|]//g' cust.txt
 }
 # allowing user to select extra applications
-rank=$(curl -s "https://www.archlinux.org/mirrorlist/?country="$country"&protocol=https&use_mirror_status=on" | sed -e 's/^#Server/Server/' -e '/^#/d' | rankmirrors -n 10 -)
-echo -e "$rank" > /etc/pacman.d/mirrorlist
-pacman -Syy
+update() {
+	pacman -Syy
+}
+
 libreoffice() {
 zenity --question --height=500 --width=450 --title="$title" --text="Would you like to install libreoffice, an open source ms office alternative?"
 lbr="$?"
@@ -697,6 +698,7 @@ archuserrepo
 cups
 displaymanager
 desktop
+update
 firefox
 libreoffice
 installapps
