@@ -74,7 +74,7 @@ echo $root_part >> root_part.txt
 		fi
 
 	# Home Partition?
-	yad --question --height=500 --width=450 --title="$title" --text "Do you want to use a seperate home partition?" 
+	yad --question --height=500 --width=450 --title="$title" --text "Do you want to use a separate home partition?" 
 		if [ "$?" = "0" ]
 		then home_part=$(yad --list --radiolist --height=500 --width=450 --title="$title" --text="Select your home partition" --column ' ' --column Partitions $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf " FALSE ""\0"$0"\0" }'))
 		# mounting home partition
@@ -220,7 +220,7 @@ subzone=$(yad --list --radiolist --height=500 --width=450 --title="$title" --tex
 clock=$(yad --list --radiolist --height=500 --width=450 --title="$title" --text "Would you like to use UTC or Local Time\nUTC is recommended unless you are dual booting with Windows." --column Select --column Time TRUE utc FALSE localtime)
 
 # Getting hostname, username, root password, and user password
-hname=$(yad --entry --title="$title" --text "Please enter a hostname for your system.\nIt must be in all lowercase letters." --entry-text "revenge")
+hname=$(yad --entry --title="$title" --text "Please enter a hostname for your system.\nIt must be in all lowercase letters." --entry-text "archlinux")
 
 username=$(yad --entry --title="$title" --text "Please enter a username for the new user.\nAgain, in all lowercase." --entry-text "user")
 }
@@ -228,7 +228,7 @@ username=$(yad --entry --title="$title" --text "Please enter a username for the 
 vbox() {
 graphics=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 if [[ $(echo $graphics | grep -i 'VMware') != "" ]]
-	then yad --question --height=500 --width=450 --title="$title" --text "The Zen Installer has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
+	then yad --question --height=500 --width=450 --title="$title" --text "YAGAI has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
 vb="$?"
 fi
 }
@@ -478,23 +478,27 @@ fi
 arch_chroot "systemctl enable NetworkManager"
 echo "50"
 # adding spookyrepo
-if [ "$rr" = "0" ]
-then 
-echo -e "\n[spookyrepo]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo "Server = https://github.com/spookykidmm/spookyrepo/raw/master/x86_64" >> /mnt/etc/pacman.conf;echo -e "Server = https://downloads.sourceforge.net/project/spookyrepo/x86_64\n" >> /mnt/etc/pacman.conf
-arch_chroot "pacman -Syy"
+if [ "$rr" = "0" ] ; then 
+	arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+	arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
+	arch_chroot "pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+	echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf ; echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
+	arch_chroot "pacman -Syy"
 fi
 
 # installing pamac-aur
-if [ "$pm" = "0" ]
-then echo -e "\n[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo -e "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64\n" >> /mnt/etc/pacman.conf
-sudo pacman -Syy 
-arch_chroot "pacman -Syy"
-arch_chroot "pacman -S --noconfirm $pack"
+if [ "$pm" = "0" ] ; then
+	arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+	arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
+	arch_chroot "pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+	echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf ; echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
+	sudo pacman -Syy 
+	arch_chroot "pacman -Syy"
+	arch_chroot "pacman -S --noconfirm $pack"
 fi
 
 #multilib
-if [ "$multilib" = "0" ]
-then
+if [ "$multilib" = "0" ] ; then
 echo -e "\n[multilib]" >> /mnt/etc/pacman.conf;echo -e "Include = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
 fi
 
