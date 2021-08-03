@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Zen Installer Framework version 2.00
+# YAGAI Framework version 0.1
 #
 # Written by Jody James
 #
@@ -291,7 +291,7 @@ dm=$(yad --list --title="$title" --radiolist  --height=500 --width=450 --text "W
 }
 
 revengerepo() {
-yad --question --title="$title"  --height=500 --width=450 --text="Would you like to add spookyrepo to your /etc/pacman.conf?\n spookyrepo contains a few extra packages, such as spotify and pamac."
+yad --question --title="$title"  --height=500 --width=450 --text="Would you like to add Chaotic-AUR to your package manager configuration?\n This unofficial user repository contains a few pre-built AUR packages"
 rr="$?"
 }
 
@@ -312,7 +312,7 @@ fi
 }
 
 archuserrepo() {
-yad --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'yay'?"
+	yad --question --height=500 --width=450 --title="$title" --text "Would you like to install Paru for Arch User Repository (AUR) support on your system?"
 abs="$?"
 }
 
@@ -419,7 +419,7 @@ arch_chroot "pacman -Syy"
 
 #installing base
 echo "# Installing Base..."
-pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils dosfstools mtools
+pacstrap /mnt base bash nano vim vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils dosfstools mtools
 if [ "$kernel" = "linux" ]
 	then pacstrap /mnt base base-devel linux
 elif [ "$kernel" = "linux-lts" ]
@@ -665,7 +665,7 @@ fi
 
 
 # Setting variables
-title="Zen Installer Framework 2.00 $SYSTEM"
+title="YAGAI Framework 0.1 $SYSTEM"
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
@@ -677,7 +677,7 @@ Parted() {
 	parted --script $dev "$1"
 }
 # Greeting the user
-yad --question --height=50--title="$title" --text "Welcome to the Zen Arch Installer.\n\nNext you will be prompted with a series of questions that will\nguide you through installing Arch Linux.\nYou will be asked if you want to use manual or auto partitioning.\nIf you select auto partitioning the drive that you select will be completely deleted\nand Arch will be installed. If you select manual, you will have the opportunity to partition the disk yourself\nand select which partitons to use for installation.\nClick 'yes' to begin or 'no' to exit."
+yad --question --height=50 --title="$title" --text "Welcome to the Yet Another Graphical Arch Installer (YAGAI).\n\nThis installer will ask you a series of questions that will\nguide you through installing Arch Linux.\nYou will be asked if you want to use manual or auto partitioning.\nIf you select auto partitioning the drive that you select will be completely deleted\nand Arch will be installed. If you select manual, you will have the opportunity to partition the disk yourself\nand select which partitons to use for installation.\nClick 'yes' to begin or 'no' to exit."
 
 if [ "$?" = "1" ]
 	then exit
