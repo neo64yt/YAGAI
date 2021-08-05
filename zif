@@ -307,7 +307,7 @@ if [ "$pm" = "0" ]
 then yad --info --title="$title" --height=500 --width=450 --text="Choose octopi if you are using a Qt desktop such as KDE or LXQt.
 Choose Pamac if you are using a GTK+ desktop. 
 If you are only using a window manager, you can select either without any detrimental effects" 
-pack=$(yad --list --radiolist --title="$title" --height=500 --width=450 --text="What package manager would you like to install?" --column select --column "Package Manager" FALSE octopi FALSE pamac-aur) 
+pack=$(yad --list --radiolist --title="$title" --height=500 --width=450 --text="What package manager would you like to install?" --column select --column "Package Manager" FALSE octopi FALSE "pamac-aur archlinux-appstream-data-pamac") 
 fi
 }
 
