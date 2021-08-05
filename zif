@@ -290,7 +290,7 @@ displaymanager() {
 dm=$(yad --list --title="$title" --radiolist  --height=500 --width=450 --text "What display manager would you like to use?" --column "Select" --column "Display Manager" FALSE "lxdm" FALSE "sddm" FALSE "gdm" FALSE "default")
 }
 
-revengerepo() {
+customrepos() {
 yad --question --title="$title"  --height=500 --width=450 --text="Would you like to add Chaotic-AUR to your package manager configuration?\n This unofficial user repository contains a few pre-built AUR packages"
 rr="$?"
 }
@@ -695,7 +695,7 @@ changeshell
 kernel
 vbox
 #nvidia
-revengerepo
+customrepos
 multilib
 packagemanager
 archuserrepo
