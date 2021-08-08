@@ -686,7 +686,7 @@ Parted() {
 	parted --script $dev "$1"
 }
 # Greeting the user
-zenity --question --height=50--title="$title" --text "Welcome to the YAGAI (Legacy Mode).\n\nNext you will be prompted with a series of questions that will\nguide you through installing Arch Linux.\n\nClick 'yes' to begin or 'no' to exit."
+zenity --question --height=50--title="$title" --text "Welcome to the YAGAI (Legacy Mode).\nNext you will be prompted with a series of questions that will guide you through installing Arch Linux.\nClick 'yes' to begin or 'no' to exit."
 
 if [ "$?" = "1" ]
 	then exit
