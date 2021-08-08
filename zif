@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# YAGAI Framework version 0.1
+# YAGAI Framework Legacy Mode (using Zenity like the original script instead of YAD)
 #
 # Written by Jody James
 #
@@ -21,22 +21,22 @@ sudo pacman -Syy
 sudo pacman -S --noconfirm arch-install-scripts archiso pacman-contrib zenity gparted
 # Selecting the Drive
 man_partition() {
-	list=` lsblk -lno NAME,TYPE,SIZE,MOUNTPOINT | grep "disk" `
+list=` lsblk -lno NAME,TYPE,SIZE,MOUNTPOINT | grep "disk" `
 
-	zenity --info --height=500 width=450 --title="$title" --text "Below is a list of the available drives on your system:\n\n$list" 
-	lsblk -lno NAME,TYPE | grep 'disk' | awk '{print "/dev/" $1 " " $2}' | sort -u > devices.txt
-	sed -i 's/\<disk\>//g' devices.txt
+zenity --info --height=500 width=450 --title="$title" --text "Below is a list of the available drives on your system:\n\n$list" 
 
-	devices=` awk '{print "FALSE " $0}' devices.txt `
+lsblk -lno NAME,TYPE | grep 'disk' | awk '{print "/dev/" $1 " " $2}' | sort -u > devices.txt
+sed -i 's/\<disk\>//g' devices.txt
+devices=` awk '{print "FALSE " $0}' devices.txt `
 
-	dev=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Select the drive that you want to use for installation." --column Drive --column Info $devices)
+dev=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Select the drive that you want to use for installation." --column Drive --column Info $devices)
 
 # Partitioning
 # Allow user to partition using gparted
-	zenity --question --height=500 --width=450 --title="$title" --text "Do you need to partition $dev?\nSelect 'yes' to open gparted and partition\nthe disk or format partitions if needed.\nThe installer will not format the partitions after this,\nso if your partitions need to be formatted please select yes\nand use gparted to format them now.\nThe installer supports using a seperate /boot /home and /root partition, as well as a swap partition or file."
-	if [ "$?" = "0" ] ; then
-		gparted
-	fi
+zenity --question --height=500 --width=450 --title="$title" --text "Do you need to partition $dev?\nSelect 'yes' to open gparted and partition\nthe disk or format partitions if needed.\nThe installer will not format the partitions after this,\nso if your partitions need to be formatted please select yes\nand use gparted to format them now.\nThe installer supports using a seperate /boot /home and /root partition, as well as a swap partition or file."
+if [ "$?" = "0" ]
+	then gparted
+fi
 
 	# Select root partition
 	root_part=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Choose a partition to use for the root partition\nWarning, this list shows all available partitions on all available drives.\nPlease choose with care." --column ' ' --column Partitions $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf " FALSE ""\0"$0"\0" }'))
@@ -74,7 +74,7 @@ echo $root_part >> root_part.txt
 		fi
 
 	# Home Partition?
-	zenity --question --height=500 --width=450 --title="$title" --text "Do you want to use a separate home partition?" 
+	zenity --question --height=500 --width=450 --title="$title" --text "Do you want to use a seperate home partition?" 
 		if [ "$?" = "0" ]
 		then home_part=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text="Select your home partition" --column ' ' --column Partitions $(sudo fdisk -l | grep dev | grep -v Disk | awk '{print $1}' | awk '{ printf " FALSE ""\0"$0"\0" }'))
 		# mounting home partition
@@ -159,7 +159,11 @@ auto_partition() {
 partition() {
 	ans=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Would you like to use automatic partitioning or would you like to partition the disk for installation yourself?\nAutomatic Partitioning will completely erase the disk that you select and install Arch." --column Select --column Choice FALSE "Automatic Partitioning" FALSE "Manual Partitioning")
 
-	[ "$ans" = "Automatic Partitioning" ] && auto_partition || man_partition
+	if [ "$ans" = "Automatic Partitioning" ]
+	then auto_partition
+	else
+	man_partition
+	fi
 
 }
 
@@ -216,7 +220,7 @@ subzone=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --
 clock=$(zenity --list --radiolist --height=500 --width=450 --title="$title" --text "Would you like to use UTC or Local Time\nUTC is recommended unless you are dual booting with Windows." --column Select --column Time TRUE utc FALSE localtime)
 
 # Getting hostname, username, root password, and user password
-hname=$(zenity --entry --title="$title" --text "Please enter a hostname for your system.\nIt must be in all lowercase letters." --entry-text "archlinux")
+hname=$(zenity --entry --title="$title" --text "Please enter a hostname for your system.\nIt must be in all lowercase letters." --entry-text "revenge")
 
 username=$(zenity --entry --title="$title" --text "Please enter a username for the new user.\nAgain, in all lowercase." --entry-text "user")
 }
@@ -224,7 +228,7 @@ username=$(zenity --entry --title="$title" --text "Please enter a username for t
 vbox() {
 graphics=$(lspci | grep -i "vga" | sed 's/.*://' | sed 's/(.*//' | sed 's/^[ \t]*//')
 if [[ $(echo $graphics | grep -i 'VMware') != "" ]]
-	then zenity --question --height=500 --width=450 --title="$title" --text "YAGAI has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
+	then zenity --question --height=500 --width=450 --title="$title" --text "The Zen Installer has detected that you are currently running in Virtualbox.\nWould you like to install Virtualbox Utilities to the installed system?"
 vb="$?"
 fi
 }
@@ -286,8 +290,8 @@ displaymanager() {
 dm=$(zenity --list --title="$title" --radiolist  --height=500 --width=450 --text "What display manager would you like to use?" --column "Select" --column "Display Manager" FALSE "lxdm" FALSE "sddm" FALSE "gdm" FALSE "default")
 }
 
-customrepos() {
-zenity --question --title="$title"  --height=500 --width=450 --text="Would you like to add Chaotic-AUR to your package manager configuration?\n This unofficial user repository contains a few pre-built AUR packages"
+revengerepo() {
+zenity --question --title="$title"  --height=500 --width=450 --text="Would you like to add spookyrepo to your /etc/pacman.conf?\n spookyrepo contains a few extra packages, such as spotify and pamac."
 rr="$?"
 }
 
@@ -303,12 +307,12 @@ if [ "$pm" = "0" ]
 then zenity --info --title="$title" --height=500 --width=450 --text="Choose octopi if you are using a Qt desktop such as KDE or LXQt.
 Choose Pamac if you are using a GTK+ desktop. 
 If you are only using a window manager, you can select either without any detrimental effects" 
-pack=$(zenity --list --radiolist --title="$title" --height=500 --width=450 --text="What package manager would you like to install?" --column select --column "Package Manager" FALSE octopi FALSE "pamac-aur archlinux-appstream-data-pamac") 
+pack=$(zenity --list --radiolist --title="$title" --height=500 --width=450 --text="What package manager would you like to install?" --column select --column "Package Manager" FALSE octopi FALSE pamac-aur) 
 fi
 }
 
 archuserrepo() {
-	zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install Paru for Arch User Repository (AUR) support on your system?"
+zenity --question --height=500 --width=450 --title="$title" --text "Would you like to install support for the Arch User Repository 'yay'?"
 abs="$?"
 }
 
@@ -415,7 +419,7 @@ arch_chroot "pacman -Syy"
 
 #installing base
 echo "# Installing Base..."
-pacstrap /mnt base bash nano vim vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils dosfstools mtools
+pacstrap /mnt base bash nano vim-minimal vi linux-firmware cryptsetup e2fsprogs findutils gawk inetutils iproute2 jfsutils licenses linux-firmware logrotate lvm2 man-db man-pages mdadm pciutils procps-ng reiserfsprogs sysfsutils xfsprogs usbutils dosfstools mtools
 if [ "$kernel" = "linux" ]
 	then pacstrap /mnt base base-devel linux
 elif [ "$kernel" = "linux-lts" ]
@@ -474,27 +478,29 @@ fi
 arch_chroot "systemctl enable NetworkManager"
 echo "50"
 # adding spookyrepo
-if [ "$rr" = "0" ] ; then 
-	arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
-	arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
-	arch_chroot "pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
-	echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf ; echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
-	arch_chroot "pacman -Syy"
+if [ "$rr" = "0" ]
+then 
+echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf;echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
+arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
+arch_chroot "pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+arch_chroot "pacman -Syy"
 fi
 
 # installing pamac-aur
-if [ "$pm" = "0" ] ; then
-	arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
-	arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
-	arch_chroot "pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
-	echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf ; echo "Include = /etc/pacman.d/chaotic-mirrorlist" >> /mnt/etc/pacman.conf
-	sudo pacman -Syy 
-	arch_chroot "pacman -Syy"
-	arch_chroot "pacman -S --noconfirm $pack"
+if [ "$pm" = "0" ]
+then echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf;echo -e "Include = /etc/pacman.d/chaotic-mirrorlist\n" >> /mnt/etc/pacman.conf
+sudo pacman -Syy 
+arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
+arch_chroot "pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
+arch_chroot "pacman -Syy"
+arch_chroot "pacman -S --noconfirm $pack"
 fi
 
 #multilib
-if [ "$multilib" = "0" ] ; then
+if [ "$multilib" = "0" ]
+then
 echo -e "\n[multilib]" >> /mnt/etc/pacman.conf;echo -e "Include = /etc/pacman.d/mirrorlist\n" >> /mnt/etc/pacman.conf
 fi
 
@@ -503,7 +509,10 @@ if [ "$abs" = "0" ]
 	then if [ "$pm" = "0" ]
 		 then arch_chroot "pacman -Syy"
 		 	  arch_chroot "pacman -S --noconfirm yay"
-	else echo -e "\n[spooky_aur]" >> /mnt/etc/pacman.conf;echo "SigLevel = Optional TrustAll" >> /mnt/etc/pacman.conf;echo -e "Server = https://raw.github.com/spookykidmm/spooky_aur/master/x86_64\n" >> /mnt/etc/pacman.conf 
+	else echo -e "\n[chaotic-aur]" >> /mnt/etc/pacman.conf;echo -e "Include = /etc/pacman.d/chaotic-mirrorlist \n" >> /mnt/etc/pacman.conf
+		arch_chroot "pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com"
+		arch_chroot "pacman-key --lsign-key 3056513887B78AEB"
+		arch_chroot "pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'"
     arch_chroot "pacman -Syy"
 	arch_chroot "pacman -S --noconfirm yay"
 	fi
@@ -665,7 +674,7 @@ fi
 
 
 # Setting variables
-title="YAGAI Framework 0.1 $SYSTEM"
+title="YAGAI Framework Legacy Mode $SYSTEM"
 
 # Adapted from AIS. An excellent bit of code!
 arch_chroot() {
@@ -677,7 +686,7 @@ Parted() {
 	parted --script $dev "$1"
 }
 # Greeting the user
-zenity --question --height=50 --title="$title" --text "Welcome to the Yet Another Graphical Arch Installer (YAGAI).\n\nThis installer will ask you a series of questions that will\nguide you through installing Arch Linux.\nYou will be asked if you want to use manual or auto partitioning.\nIf you select auto partitioning the drive that you select will be completely deleted\nand Arch will be installed. If you select manual, you will have the opportunity to partition the disk yourself\nand select which partitons to use for installation.\nClick 'yes' to begin or 'no' to exit."
+zenity --question --height=50--title="$title" --text "Welcome to the YAGAI (Legacy Mode).\n\nNext you will be prompted with a series of questions that will\nguide you through installing Arch Linux.\n\nClick 'yes' to begin or 'no' to exit."
 
 if [ "$?" = "1" ]
 	then exit
@@ -691,7 +700,7 @@ changeshell
 kernel
 vbox
 #nvidia
-customrepos
+revengerepo
 multilib
 packagemanager
 archuserrepo
